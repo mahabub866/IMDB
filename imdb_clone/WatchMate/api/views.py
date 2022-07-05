@@ -1,6 +1,7 @@
 
-from WatchMate.api.serializers import WatchListSerializer
-from WatchMate.models import WatchList
+from platform import platform
+from WatchMate.api.serializers import WatchListSerializer,StreamSerializer
+from WatchMate.models import WatchList,StreamPlateform
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -22,7 +23,7 @@ class WatchListAV(APIView):
         else:
             return Response(serializer.errors)
 
-class MoiveDetailsAV(APIView):
+class WatchDetailsAV(APIView):
     def get(self, request,pk):    
         try:
             moive = WatchList.objects.get(pk=pk)
@@ -41,6 +42,43 @@ class MoiveDetailsAV(APIView):
 
     def delete(self,request,pk):
         moive = WatchList.objects.get(pk=pk)
+        moive.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class StreamListAV(APIView):
+    def get(self, request):
+        platform = StreamPlateform.objects.all()
+        serializer = StreamSerializer(platform, many=True)
+        return Response(serializer.data)
+    
+    def post(self,request):
+        serializer = StreamSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+class StreamDetailsAV(APIView):
+    def get(self, request,pk):    
+        try:
+            moive = StreamPlateform.objects.get(pk=pk)
+        except StreamPlateform.DoesNotExist:
+            return Response({'error':'Not found'},status=status.HTTP_404_NOT_FOUND)
+        serializer = StreamSerializer(moive)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    def put(self,request,pk):
+        moive = StreamPlateform.objects.get(pk=pk)
+        serializer = StreamSerializer(moive,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self,request,pk):
+        moive = StreamPlateform.objects.get(pk=pk)
         moive.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

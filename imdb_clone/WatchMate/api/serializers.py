@@ -1,17 +1,18 @@
 
 from rest_framework import serializers
 
-from WatchMate.models import WatchList
+from WatchMate.models import WatchList,StreamPlateform
 
 class WatchListSerializer(serializers.ModelSerializer):
-    len_name=serializers.SerializerMethodField()
+    # len_name=serializers.SerializerMethodField()
     class Meta:
         model=WatchList
         fields="__all__"  #['id','name','descroption']
 class StreamSerializer(serializers.ModelSerializer):
-    len_name=serializers.SerializerMethodField()
+    # len_name=serializers.SerializerMethodField()
+    watchlist=WatchListSerializer(many=True,read_only=True)
     class Meta:
-        model=WatchList
+        model=StreamPlateform
         fields="__all__"  #['id','name','descroption']
 
 
