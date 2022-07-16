@@ -1,10 +1,21 @@
 
 from rest_framework import serializers
 
-from WatchMate.models import WatchList,StreamPlateform
+from WatchMate.models import Review, WatchList,StreamPlateform
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    # len_name=serializers.SerializerMethodField()
+    review_user=serializers.StringRelatedField(read_only=True)
+    
+    class Meta:
+        model=Review
+        exclude=('watchlist',)
+        # fields="__all__"  #['id','name','descroption']
 
 class WatchListSerializer(serializers.ModelSerializer):
     # len_name=serializers.SerializerMethodField()
+    reviews=ReviewSerializer(many=True,read_only=True)
     class Meta:
         model=WatchList
         fields="__all__"  #['id','name','descroption']

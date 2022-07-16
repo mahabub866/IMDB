@@ -1,14 +1,69 @@
 
 from platform import platform
-from WatchMate.api.serializers import WatchListSerializer,StreamSerializer
-from WatchMate.models import WatchList,StreamPlateform
+from rest_framework.exceptions import ValidationError
+
+from django.shortcuts import get_object_or_404
+from WatchMate.api.serializers import WatchListSerializer,StreamSerializer,ReviewSerializer
+from WatchMate.models import WatchList,StreamPlateform,Review
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status
-# Create your views here.
+from rest_framework import viewsets
 
+# from rest_framework import mixins
+from rest_framework import generics
+
+# Create your views here.
+class ReviewCreate(generics.CreateAPIView):
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        return Review.objects.all()
+
+    def perform_create(self, serializer):
+        pk=self.kwargs.get('pk')
+        moive=WatchList.objects.get(pk=pk)
+        user=self.request.user
+        review_queryset=Review.objects.filter(watchlist=moive,review_user=user)
+
+        if review_queryset.exists():
+            raise ValidationError('youhave already reviewed this moive ')
+
+        serializer.save(watchlist=moive,review_user=user)
+
+class ReviewList(generics.ListAPIView):
+    # queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    def get_queryset(self):
+        pk=self.kwargs['pk']
+        return Review.objects.filter(watchlist=pk)
+
+class ReviewDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+
+# class ReviewDetails(mixins.RetrieveModelMixin,generics.GenericAPIView):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
+
+#     def get(self, request, *args, **kwargs):
+#         return self.retrieve(request, *args, **kwargs)
+
+
+# class ReviewList(mixins.ListModelMixin,
+#                   mixins.CreateModelMixin,
+#                   generics.GenericAPIView):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
+
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
 class WatchListAV(APIView):
     def get(self, request):
         moives = WatchList.objects.all()
@@ -44,6 +99,37 @@ class WatchDetailsAV(APIView):
         moive = WatchList.objects.get(pk=pk)
         moive.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class StreamPlateformMVS(viewsets.ModelViewSet):
+    queryset = StreamPlateform.objects.all()
+    serializer_class = StreamSerializer
+    
+
+# class StreamplateformVS(viewsets.Viewsets):
+    
+#     def list(self, request):
+#         queryset = StreamPlateform.objects.all()
+#         serializer = StreamSerializer(queryset, many=True)
+#         return Response(serializer.data)
+
+#     def retrieve(self, request, pk=None):
+#         queryset = StreamPlateform.objects.all()
+#         watchlist = get_object_or_404(queryset, pk=pk)
+#         serializer = StreamSerializer(watchlist)
+#         return Response(serializer.data)
+    
+#     def create(self,request):
+#         serializer=StreamSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors)
+#     def destor(self,request,pk):
+#         moive = StreamPlateform.objects.get(pk=pk)
+#         moive.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class StreamListAV(APIView):
