@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=F:\Project\Python\IMDB\imdb_clone\imdb_env
+set VIRTUAL_ENV=D:\Python Django\IMDB\imdb_clone\imdb_env
 
 if not defined PROMPT set PROMPT=$P$G
 
