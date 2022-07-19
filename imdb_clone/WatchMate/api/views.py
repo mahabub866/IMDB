@@ -3,6 +3,7 @@ from platform import platform
 from rest_framework.exceptions import ValidationError
 
 from django.shortcuts import get_object_or_404
+from WatchMate.api.permisiion import AdminOrReadOnly, ReviewUserOrReadOnly
 from WatchMate.api.serializers import WatchListSerializer,StreamSerializer,ReviewSerializer
 from WatchMate.models import WatchList,StreamPlateform,Review
 from django.http import JsonResponse
@@ -11,12 +12,14 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import viewsets
-
+from rest_framework.permissions import IsAuthenticated
 # from rest_framework import mixins
 from rest_framework import generics
 
+
 # Create your views here.
 class ReviewCreate(generics.CreateAPIView):
+    
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
@@ -29,20 +32,36 @@ class ReviewCreate(generics.CreateAPIView):
         review_queryset=Review.objects.filter(watchlist=moive,review_user=user)
 
         if review_queryset.exists():
-            raise ValidationError('youhave already reviewed this moive ')
+            raise ValidationError('you have already reviewed this moive ')
+        
+
+
+        if moive.number_rating==0:
+            moive.avg_rating=serializer.validated_data['rating']
+        else:
+            moive.avg_rating=(moive.avg_rating+serializer.validated_data['rating'])/2
+        
+        moive.number_rating=moive.number_rating+1
+        moive.save()
+
 
         serializer.save(watchlist=moive,review_user=user)
 
 class ReviewList(generics.ListAPIView):
+   
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
+    
+    
     def get_queryset(self):
-        pk=self.kwargs['pk']
+        pk=self.kwargs.get('pk')
         return Review.objects.filter(watchlist=pk)
 
 class ReviewDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [ReviewUserOrReadOnly]
 
 
 # class ReviewDetails(mixins.RetrieveModelMixin,generics.GenericAPIView):

@@ -17,11 +17,12 @@ urlpatterns = [
     path('watchlist/moive_id:<int:pk>/',WatchDetailsAV.as_view(),name='moive_details' ),
     path('streamlist/',StreamListAV.as_view(),name='streamlist' ),
     path('streamlist/moive_id:<int:pk>/',StreamDetailsAV.as_view(),name='stream_details' ),
-    path('stream/moive_id:<int:pk>/review-create/',ReviewCreate.as_view(),name='reviewcreate' ),
-    path('stream/moive_id:<int:pk>/review/',ReviewList.as_view(),name='reviewlist' ),
+    
    
-    path('reviewlist/',ReviewList.as_view(),name='reviewlist' ),
     path('reviewlist/review_id:<int:pk>/',ReviewDetails.as_view(),name='reviewdetails' ),
-    path('stream/review/review_id:<int:pk>/',ReviewDetails.as_view(),name='reviewdetails' ),
+
+    path('moive_id:<int:pk>/review-create/',ReviewCreate.as_view(),name='reviewcreate' ),
+    path('moive_id:<int:pk>/review/',ReviewList.as_view(),name='reviewlist' ),
+    path('review/review_id:<int:pk>/',ReviewDetails.as_view(),name='reviewdetails' ),
   
 ]
