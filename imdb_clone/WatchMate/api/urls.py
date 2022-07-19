@@ -12,7 +12,7 @@ urlpatterns = [
   
     path('watchlist/',WatchListAV.as_view(),name='moivelist' ),
     path('',include(router.urls)),
-    path('api-auth/',include('rest_framework.urls')),
+    # path('api-auth/',include('rest_framework.urls')),
    
     path('watchlist/moive_id:<int:pk>/',WatchDetailsAV.as_view(),name='moive_details' ),
     path('streamlist/',StreamListAV.as_view(),name='streamlist' ),
