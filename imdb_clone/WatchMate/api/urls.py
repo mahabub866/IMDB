@@ -26,3 +26,4 @@ urlpatterns = [
     path('review/review_id:<int:pk>/',ReviewDetails.as_view(),name='reviewdetails' ),
   
 ]
+ 

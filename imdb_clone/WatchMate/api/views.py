@@ -5,6 +5,7 @@ from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from WatchMate.api.permisiion import IsAdminOrReadOnly, IsReviewUserOrReadOnly
 from WatchMate.api.serializers import WatchListSerializer,StreamSerializer,ReviewSerializer
+from WatchMate.api.throttling import ReviewCreateThrottle, ReviewListThrottle
 from WatchMate.models import WatchList,StreamPlateform,Review
 from django.http import JsonResponse
 from rest_framework.response import Response
@@ -15,11 +16,13 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 # from rest_framework import mixins
 from rest_framework import generics
+from rest_framework.throttling import UserRateThrottle,AnonRateThrottle,ScopedRateThrottle
 
 
 # Create your views here.
 class ReviewCreate(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewCreateThrottle]
     
     serializer_class = ReviewSerializer
 
@@ -53,6 +56,7 @@ class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewListThrottle]
     
     
     def get_queryset(self):
@@ -63,6 +67,9 @@ class ReviewDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsReviewUserOrReadOnly]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope='review-detail'
+
 
 
 # class ReviewDetails(mixins.RetrieveModelMixin,generics.GenericAPIView):
