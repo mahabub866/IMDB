@@ -17,9 +17,22 @@ from rest_framework.permissions import IsAuthenticated
 # from rest_framework import mixins
 from rest_framework import generics
 from rest_framework.throttling import UserRateThrottle,AnonRateThrottle,ScopedRateThrottle
-
+from django_filters.rest_framework import DjangoFilterBackend
 
 # Create your views here.
+
+class UserReview(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+ 
+    
+    
+    # def get_queryset(self):
+    #     username=self.kwargs['username']
+    #     return Review.objects.filter(review_user__username=username)
+    def get_queryset(self):
+        username = self.request.query_params.get('username',None)
+        return Review.objects.filter(review_user__username=username)
+
 class ReviewCreate(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     throttle_classes = [ReviewCreateThrottle]
@@ -56,7 +69,9 @@ class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
-    throttle_classes = [ReviewListThrottle]
+    # throttle_classes = [ReviewListThrottle]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['review_user__username', 'active']
     
     
     def get_queryset(self):
@@ -91,21 +106,37 @@ class ReviewDetails(generics.RetrieveUpdateDestroyAPIView):
 
 #     def post(self, request, *args, **kwargs):
 #         return self.create(request, *args, **kwargs)
-class WatchListAV(APIView):
-    permission_classes=[IsAdminOrReadOnly]
-    def get(self, request):
-        moives = WatchList.objects.all()
-        serializer = WatchListSerializer(moives, many=True)
-        return Response(serializer.data)
+
+
+class WatchList(generics.ListAPIView):
+   
+    queryset = WatchList.objects.all()
+    serializer_class = WatchListSerializer
+    # permission_classes = [IsAdminOrReadOnly]
+    # throttle_classes = [ReviewListThrottle]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['title', 'platform__name']
     
-    def post(self,request):
-        serializer = WatchListSerializer(data=request.data)
+    
+    def get_queryset(self):
+        pk=self.kwargs.get('pk')
+        return Review.objects.filter(watchlist=pk)
+
+# class WatchListAV(APIView):
+#     permission_classes=[IsAdminOrReadOnly]
+#     def get(self, request):
+#         moives = WatchList.objects.all()
+#         serializer = WatchListSerializer(moives, many=True)
+#         return Response(serializer.data)
+    
+#     def post(self,request):
+#         serializer = WatchListSerializer(data=request.data)
         
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors)
 
 class WatchDetailsAV(APIView):
     permission_classes=[IsAdminOrReadOnly]

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'WatchMate',
     'rest_framework.authtoken',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

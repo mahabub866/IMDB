@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="D:\Python Django\IMDB\imdb_clone\imdb_env"
+VIRTUAL_ENV="F:\Project\Python\IMDB\imdb_clone\imdb_env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

@@ -1,6 +1,6 @@
 
 from django.urls import  path,include
-from WatchMate.api.views import  ReviewCreate, StreamDetailsAV,ReviewDetails, StreamListAV,StreamPlateformMVS, WatchDetailsAV,WatchListAV,ReviewList
+from WatchMate.api.views import  ReviewCreate, StreamDetailsAV,ReviewDetails, StreamListAV,StreamPlateformMVS, UserReview, WatchDetailsAV,WatchListAV,ReviewList
 
 from rest_framework.routers import DefaultRouter
 
@@ -21,9 +21,11 @@ urlpatterns = [
    
     # path('reviewlist/review_id:<int:pk>/',ReviewDetails.as_view(),name='reviewdetails' ),
 
-    path('moive_id:<int:pk>/review-create/',ReviewCreate.as_view(),name='reviewcreate' ),
-    path('moive_id:<int:pk>/review/',ReviewList.as_view(),name='reviewlist' ),
+    path('<int:pk>/review-create/',ReviewCreate.as_view(),name='reviewcreate' ),
+    path('<int:pk>/review/',ReviewList.as_view(),name='reviewlist' ),
     path('review/review_id:<int:pk>/',ReviewDetails.as_view(),name='reviewdetails' ),
+    # path('reviews/username:<str:username>/',UserReview.as_view(),name='user-review-details' ),
+    path('reviews/',UserReview.as_view(),name='user-review-details' ),
   
 ]
  
